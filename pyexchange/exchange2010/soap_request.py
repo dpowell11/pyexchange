@@ -276,6 +276,18 @@ def delete_folder(folder):
   )
   return root
 
+def find_remote(user, parent_id, format=u"Default"):
+
+  id = T.DistinguishedFolderId(T.Mailbox(T.EmailAddress(user)), Id=parent_id) if parent_id in DISTINGUISHED_IDS else T.FolderId(T.Mailbox(T.EmailAddress(user)), Id=parent_id)
+
+  root = M.FindFolder(
+    {u'Traversal': u'Shallow'},
+    M.FolderShape(
+      T.BaseShape(format)
+    ),
+    M.ParentFolderIds(id)
+  )
+  return root
 
 def new_event(event):
   """

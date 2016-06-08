@@ -774,6 +774,44 @@ class Exchange2010FolderService(BaseExchangeFolderService):
     response_xml = self.service.send(body)
     return self._parse_response_for_find_folder(response_xml)
 
+  def find_remote(self, user, parent_id):
+    """
+      find_remote(parent_id)
+      :param str user: The account to search for folders.
+      :param str parent_id:  The parent folder to list.
+
+      This method will return a list of sub-folders to a given parent folder.
+
+    """
+
+    body = soap_request.find_remote(user=user, parent_id=parent_id, format=u'AllProperties')
+    response_xml = self.service.send(body)
+    return self._parse_response_for_find_folder(response_xml)
+
+  def subFolders(self, parent_id='root'):
+    try:
+      subs = self.find_folder(parent_id)
+    except:
+      return []
+    for folder in subs:
+      try:
+        subs.extend(self.find_folder(folder.id))
+      except:
+        pass
+    return subs
+
+  def remoteFolders(self, user, parent_id='root'):
+    try:
+      subs = self.find_remote(user, parent_id)
+    except:
+      return []
+    for folder in subs:
+      try:
+        subs.extend(self.find_remote(user, folder.id))
+      except:
+        pass
+    return subs
+
   def _parse_response_for_find_folder(self, response):
 
     result = []
